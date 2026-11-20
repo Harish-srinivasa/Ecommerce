@@ -1,5 +1,5 @@
 
-import { db } from "./firebase.js";
+import { auth, db } from "./firebase.js";
 
 import {
     collection,
@@ -141,11 +141,110 @@ function displayProducts() {
 }
 
 // Search and category filtering
-function filterProducts() {
+// AJAX search using jQuery and Firestore REST API
+async function filterProducts() {
     const searchText = searchInput.value.trim().toLowerCase();
     const selectedCategory = categoryFilter.value;
 
-    filteredProducts = allProducts.filter((product) => {
+    try {
+        const user = auth.currentUser;
+
+        if (!user) {
+            // Fallback to already loaded products if not authenticated
+            applyLocalFilter(searchText, selectedCategory);
+            return;
+        }
+
+        const token = await user.getIdToken();
+
+        $.ajax({
+            url: `https://firestore.googleapis.com/v1/projects/ecommerce-bc4d2/databases/(default)/documents/inventory`,
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            dataType: "json",
+
+            success: function (response) {
+                const ajaxProducts = (response.documents || []).map(doc => {
+                    const fields = doc.fields || {};
+
+                    function getValue(field) {
+                        if (!field) return null;
+
+                        if (field.stringValue !== undefined)
+                            return field.stringValue;
+
+                        if (field.integerValue !== undefined)
+                            return Number(field.integerValue);
+
+                        if (field.doubleValue !== undefined)
+                            return Number(field.doubleValue);
+
+                        if (field.booleanValue !== undefined)
+                            return field.booleanValue;
+
+                        return null;
+                    }
+
+                    const id = doc.name.split("/").pop();
+
+                    return {
+                        id,
+                        title: getValue(fields.title),
+                        description: getValue(fields.description),
+                        catId: getValue(fields.catId),
+                        qty: getValue(fields.qty),
+                        price: getValue(fields.price),
+                        active: getValue(fields.active)
+                    };
+                });
+
+                filteredProducts = ajaxProducts.filter(product => {
+                    const matchesSearch =
+                        (product.title || "").toLowerCase().includes(searchText) ||
+                        product.id.toLowerCase().includes(searchText);
+
+                    const matchesCategory =
+                        selectedCategory === "all" ||
+                        product.catId === selectedCategory;
+
+                    return matchesSearch &&
+                        matchesCategory &&
+                        product.active !== false;
+                });
+
+                // Restore category names from previously loaded products
+                filteredProducts = filteredProducts.map(product => {
+                    const existing = allProducts.find(p => p.id === product.id);
+
+                    return {
+                        ...product,
+                        categoryName: existing?.categoryName || "Unknown"
+                    };
+                });
+
+                currentPage = 1;
+                displayProducts();
+            },
+
+            error: function (xhr) {
+                console.error("AJAX search failed:", xhr.responseText);
+
+                // Fallback to locally loaded Firestore data
+                applyLocalFilter(searchText, selectedCategory);
+            }
+        });
+
+    } catch (error) {
+        console.error("Search error:", error);
+        applyLocalFilter(searchText, selectedCategory);
+    }
+}
+
+// Local fallback search
+function applyLocalFilter(searchText, selectedCategory) {
+    filteredProducts = allProducts.filter(product => {
         const matchesSearch =
             product.title.toLowerCase().includes(searchText) ||
             product.id.toLowerCase().includes(searchText);
