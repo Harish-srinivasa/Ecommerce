@@ -168,6 +168,44 @@
 </section>
 
 <script type="module" src="js/admin-reports.js"></script>
+<hr>
+
+<section>
+    <h2>Inventory Reports</h2>
+
+    <label for="stockReportType">Report Type:</label>
+    <select id="stockReportType">
+        <option value="all">All Stock</option>
+        <option value="category">Category-wise Stock</option>
+        <option value="high">High Stock (&gt; 100)</option>
+        <option value="low">Low Stock (&lt; 15)</option>
+    </select>
+
+    <label for="stockReportCategory">Category:</label>
+    <select id="stockReportCategory">
+        <option value="all">All Categories</option>
+    </select>
+
+    <button id="generateStockReportBtn">Generate Report</button>
+
+    <h3 id="stockReportSummary">Inventory Summary</h3>
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="stockReportList"></tbody>
+    </table>
+</section>
+
+<script type="module" src="js/inventory-reports.js"></script>
 
 
 </body>
