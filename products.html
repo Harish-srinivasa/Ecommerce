@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,39 +23,20 @@
         <h2>Products</h2>
 
         <section class="product-controls">
-            <input type="text" id="searchInput" placeholder="Search products">
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search by product name or ID"
+            >
 
             <select id="categoryFilter">
                 <option value="all">All Categories</option>
-                <option value="electronics">Electronics</option>
-                <option value="clothing">Clothing</option>
-                <option value="books">Books</option>
             </select>
         </section>
 
+        <p id="productMessage"></p>
+
         <section id="productList" class="product-container">
-
-            <div class="product-card">
-                <h3>Headphones</h3>
-                <p>Category: Electronics</p>
-                <p>Price: ₹1500</p>
-                <button>Add to Cart</button>
-            </div>
-
-            <div class="product-card">
-                <h3>T-Shirt</h3>
-                <p>Category: Clothing</p>
-                <p>Price: ₹500</p>
-                <button>Add to Cart</button>
-            </div>
-
-            <div class="product-card">
-                <h3>Programming Book</h3>
-                <p>Category: Books</p>
-                <p>Price: ₹800</p>
-                <button>Add to Cart</button>
-            </div>
-
         </section>
 
         <section class="pagination">
@@ -63,6 +45,8 @@
             <button id="nextPage">Next</button>
         </section>
     </main>
-<script src="js/products.js"></script>
+
+    <script type="module" src="js/products.js"></script>
+
 </body>
 </html>
