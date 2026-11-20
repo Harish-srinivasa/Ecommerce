@@ -435,6 +435,82 @@ function getFilteredProducts() {
         : allProducts;
 }
 
+// CUSTOMER MANAGEMENT
+
+const {
+    collection: custCollection,
+    getDocs: custGetDocs,
+    doc: custDoc,
+    updateDoc: custUpdateDoc
+} = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
+
+async function loadCustomers() {
+    const customerList = document.getElementById("customerList");
+
+    const snapshot = await custGetDocs(
+        custCollection(db, "customers")
+    );
+
+    customerList.innerHTML = "";
+
+    snapshot.forEach((docSnap) => {
+        const customer = docSnap.data();
+
+        const row = document.createElement("tr");
+
+        const values = [
+            docSnap.id,
+            customer.name || "",
+            customer.email || "",
+            customer.mobile || "",
+            customer.creditLimit ?? 0
+        ];
+
+        values.forEach((value) => {
+            const cell = document.createElement("td");
+            cell.textContent = value;
+            row.appendChild(cell);
+        });
+
+        const actionCell = document.createElement("td");
+
+        const creditInput = document.createElement("input");
+        creditInput.type = "number";
+        creditInput.min = "0";
+        creditInput.value = customer.creditLimit ?? 0;
+
+        const updateButton = document.createElement("button");
+        updateButton.textContent = "Update";
+
+        updateButton.addEventListener("click", async () => {
+            const newLimit = Number(creditInput.value);
+
+            if (!Number.isFinite(newLimit) || newLimit < 0) {
+                alert("Enter a valid credit limit.");
+                return;
+            }
+
+            try {
+                await custUpdateDoc(
+                    custDoc(db, "customers", docSnap.id),
+                    { creditLimit: newLimit }
+                );
+
+                alert("Credit limit updated successfully!");
+
+                loadCustomers();
+            } catch (error) {
+                alert("Error updating credit limit: " + error.message);
+            }
+        });
+
+        actionCell.append(creditInput, updateButton);
+        row.appendChild(actionCell);
+
+        customerList.appendChild(row);
+    });
+}
+
 
 
 // INITIAL LOAD
