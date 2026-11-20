@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Ecommerce</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <h1>Admin Dashboard</h1>
+
+    <section>
+        <h2>Category Management</h2>
+
+        <input type="text" id="categoryName" placeholder="Enter category name">
+        <button id="addCategoryBtn">Add Category</button>
+
+        <ul id="categoryList"></ul>
+    </section>
+
+    <script type="module" src="js/admin.js"></script>
+    
+<hr>
+
+<h2>Inventory Management</h2>
+
+<div class="form-container">
+    <input type="text" id="productTitle" placeholder="Product Title">
+
+    <input type="text" id="productDescription" placeholder="Description">
+
+    <select id="productCategory">
+        <option value="">Select Category</option>
+    </select>
+
+    <input type="number" id="productQty" placeholder="Quantity" min="0">
+
+    <input type="number" id="productPrice" placeholder="Price" min="0" step="0.01">
+
+    <button id="addProductBtn">Add Product</button>
+</div>
+
+<h3>Inventory List</h3>
+
+<table border="1" cellpadding="10">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody id="inventoryList"></tbody>
+</table>
+
+<h3>Filter Inventory</h3>
+
+<select id="inventoryCategoryFilter">
+    <option value="">All Categories</option>
+</select>
+
+<input
+    type="text"
+    id="searchProductId"
+    placeholder="Search by Product ID"
+>
+
+<button id="searchProductBtn">Search</button>
+<button id="showAllProductsBtn">Show All</button>
+
+<div>
+    <button id="prevPageBtn">Previous</button>
+    <span id="pageInfo">Page 1</span>
+    <button id="nextPageBtn">Next</button>
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Ecommerce</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Admin Reports</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="admin.html">Admin</a>
+            <a href="products.html">Products</a>
+        </nav>
+    </header>
+
+    <main class="admin-container">
+
+        <h2>Customer Reports</h2>
+
+        <section class="report-section">
+            <button>All Customers</button>
+            <button>Top 10 Customers</button>
+
+            <label>From:
+                <input type="date" id="customerFromDate">
+            </label>
+
+            <label>To:
+                <input type="date" id="customerToDate">
+            </label>
+
+            <button>Cash Purchases</button>
+            <button>Credit Purchases</button>
+        </section>
+
+        <h2>Inventory Reports</h2>
+
+        <section class="report-section">
+            <button>Current Stock</button>
+            <button>All Inventory</button>
+            <button>Category Wise</button>
+            <button>High Stock (&gt;100)</button>
+            <button>Low Stock (&lt;15)</button>
+        </section>
+
+        <h2>Sales Reports</h2>
+
+        <section class="report-section">
+            <label>From:
+                <input type="date" id="salesFromDate">
+            </label>
+
+            <label>To:
+                <input type="date" id="salesToDate">
+            </label>
+
+            <button>All Sales</button>
+            <button>Category Wise</button>
+            <button>Cash Wise</button>
+            <button>Credit Wise</button>
+            <button>Date Wise</button>
+            <button>Top 10 Selling Items</button>
+            <button>Bottom 10 Selling Items</button>
+        </section>
+
+        <section id="reportOutput">
+            <h2>Report Output</h2>
+            <table class="cart-table">
+                <thead id="reportHeaders"></thead>
+                <tbody id="reportData"></tbody>
+            </table>
+        </section>
+
+    </main>
+
+</body>
+</html>
