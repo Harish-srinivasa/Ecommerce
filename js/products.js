@@ -3,7 +3,9 @@ import { auth, db } from "./firebase.js";
 
 import {
     collection,
-    getDocs
+    getDocs,
+    query,
+    where
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
 // HTML elements
@@ -26,6 +28,8 @@ const productsPerPage = 6;
 async function loadCategories() {
     const snapshot = await getDocs(collection(db, "categories"));
 
+    categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+
     snapshot.forEach((docSnap) => {
         const category = docSnap.data();
 
@@ -37,11 +41,18 @@ async function loadCategories() {
     });
 }
 
-// Load products from Firestore
+// Load only active products from Firestore
 async function loadProducts() {
-    const snapshot = await getDocs(collection(db, "inventory"));
+    const activeProductsQuery = query(
+        collection(db, "inventory"),
+        where("active", "==", true)
+    );
 
-    const categorySnapshot = await getDocs(collection(db, "categories"));
+    const snapshot = await getDocs(activeProductsQuery);
+
+    const categorySnapshot = await getDocs(
+        collection(db, "categories")
+    );
 
     const categories = {};
 
@@ -54,18 +65,16 @@ async function loadProducts() {
     snapshot.forEach((docSnap) => {
         const product = docSnap.data();
 
-        // Display only active products
-        if (product.active !== false) {
-            allProducts.push({
-                id: docSnap.id,
-                ...product,
-                categoryName: categories[product.catId] || "Unknown"
-            });
-        }
+        allProducts.push({
+            id: docSnap.id,
+            ...product,
+            categoryName: categories[product.catId] || "Unknown"
+        });
     });
 
     filteredProducts = [...allProducts];
 
+    currentPage = 1;
     displayProducts();
 }
 
@@ -140,7 +149,6 @@ function displayProducts() {
     nextPage.disabled = currentPage === totalPages;
 }
 
-// Search and category filtering
 // AJAX search using jQuery and Firestore REST API
 async function filterProducts() {
     const searchText = searchInput.value.trim().toLowerCase();
@@ -150,7 +158,6 @@ async function filterProducts() {
         const user = auth.currentUser;
 
         if (!user) {
-            // Fallback to already loaded products if not authenticated
             applyLocalFilter(searchText, selectedCategory);
             return;
         }
@@ -158,65 +165,96 @@ async function filterProducts() {
         const token = await user.getIdToken();
 
         $.ajax({
-            url: `https://firestore.googleapis.com/v1/projects/ecommerce-bc4d2/databases/(default)/documents/inventory`,
-            method: "GET",
+            url: "https://firestore.googleapis.com/v1/projects/ecommerce-bc4d2/databases/(default)/documents:runQuery",
+
+            method: "POST",
+
             headers: {
                 Authorization: `Bearer ${token}`
             },
+
+            contentType: "application/json",
+
             dataType: "json",
 
-            success: function (response) {
-                const ajaxProducts = (response.documents || []).map(doc => {
-                    const fields = doc.fields || {};
-
-                    function getValue(field) {
-                        if (!field) return null;
-
-                        if (field.stringValue !== undefined)
-                            return field.stringValue;
-
-                        if (field.integerValue !== undefined)
-                            return Number(field.integerValue);
-
-                        if (field.doubleValue !== undefined)
-                            return Number(field.doubleValue);
-
-                        if (field.booleanValue !== undefined)
-                            return field.booleanValue;
-
-                        return null;
+            data: JSON.stringify({
+                structuredQuery: {
+                    from: [
+                        {
+                            collectionId: "inventory"
+                        }
+                    ],
+                    where: {
+                        fieldFilter: {
+                            field: {
+                                fieldPath: "active"
+                            },
+                            op: "EQUAL",
+                            value: {
+                                booleanValue: true
+                            }
+                        }
                     }
+                }
+            }),
 
-                    const id = doc.name.split("/").pop();
+            success: function (response) {
 
-                    return {
-                        id,
-                        title: getValue(fields.title),
-                        description: getValue(fields.description),
-                        catId: getValue(fields.catId),
-                        qty: getValue(fields.qty),
-                        price: getValue(fields.price),
-                        active: getValue(fields.active)
-                    };
-                });
+                const ajaxProducts = (response || [])
+                    .filter(result => result.document)
+                    .map(result => {
+
+                        const doc = result.document;
+                        const fields = doc.fields || {};
+
+                        function getValue(field) {
+                            if (!field) return null;
+
+                            if (field.stringValue !== undefined)
+                                return field.stringValue;
+
+                            if (field.integerValue !== undefined)
+                                return Number(field.integerValue);
+
+                            if (field.doubleValue !== undefined)
+                                return Number(field.doubleValue);
+
+                            if (field.booleanValue !== undefined)
+                                return field.booleanValue;
+
+                            return null;
+                        }
+
+                        return {
+                            id: doc.name.split("/").pop(),
+                            title: getValue(fields.title),
+                            description: getValue(fields.description),
+                            catId: getValue(fields.catId),
+                            qty: getValue(fields.qty),
+                            price: getValue(fields.price),
+                            active: getValue(fields.active)
+                        };
+                    });
 
                 filteredProducts = ajaxProducts.filter(product => {
+
                     const matchesSearch =
                         (product.title || "").toLowerCase().includes(searchText) ||
                         product.id.toLowerCase().includes(searchText);
 
                     const matchesCategory =
+                        !selectedCategory ||
                         selectedCategory === "all" ||
                         product.catId === selectedCategory;
 
-                    return matchesSearch &&
-                        matchesCategory &&
-                        product.active !== false;
+                    return matchesSearch && matchesCategory;
                 });
 
-                // Restore category names from previously loaded products
                 filteredProducts = filteredProducts.map(product => {
-                    const existing = allProducts.find(p => p.id === product.id);
+
+                    const existing = allProducts.find(
+                        p => p.id === product.id
+                    );
 
                     return {
                         ...product,
@@ -231,25 +269,28 @@ async function filterProducts() {
             error: function (xhr) {
                 console.error("AJAX search failed:", xhr.responseText);
 
-                // Fallback to locally loaded Firestore data
                 applyLocalFilter(searchText, selectedCategory);
             }
         });
 
     } catch (error) {
         console.error("Search error:", error);
+
         applyLocalFilter(searchText, selectedCategory);
     }
 }
 
 // Local fallback search
 function applyLocalFilter(searchText, selectedCategory) {
+
     filteredProducts = allProducts.filter(product => {
+
         const matchesSearch =
-            product.title.toLowerCase().includes(searchText) ||
+            (product.title || "").toLowerCase().includes(searchText) ||
             product.id.toLowerCase().includes(searchText);
 
         const matchesCategory =
+            !selectedCategory ||
             selectedCategory === "all" ||
             product.catId === selectedCategory;
 
@@ -262,20 +303,24 @@ function applyLocalFilter(searchText, selectedCategory) {
 
 // Add product to cart using localStorage
 function addToCart(product) {
+
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
     const existingProduct = cart.find(
-        (item) => item.id === product.id
+        item => item.id === product.id
     );
 
     if (existingProduct) {
+
         if (existingProduct.quantity >= Number(product.qty)) {
             alert("Maximum available stock reached.");
             return;
         }
 
         existingProduct.quantity++;
+
     } else {
+
         cart.push({
             id: product.id,
             title: product.title,
@@ -296,6 +341,7 @@ searchInput.addEventListener("input", filterProducts);
 categoryFilter.addEventListener("change", filterProducts);
 
 previousPage.addEventListener("click", () => {
+
     if (currentPage > 1) {
         currentPage--;
         displayProducts();
@@ -303,6 +349,7 @@ previousPage.addEventListener("click", () => {
 });
 
 nextPage.addEventListener("click", () => {
+
     const totalPages = Math.ceil(
         filteredProducts.length / productsPerPage
     );
@@ -315,10 +362,15 @@ nextPage.addEventListener("click", () => {
 
 // Initialize
 async function initializeProducts() {
+
     try {
         await loadCategories();
         await loadProducts();
+
     } catch (error) {
+
+        console.error(error);
+
         productMessage.textContent =
             "Unable to load products: " + error.message;
     }

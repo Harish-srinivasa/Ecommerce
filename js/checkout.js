@@ -4,7 +4,6 @@ import { auth, db } from "./firebase.js";
 import {
     collection,
     doc,
-    getDoc,
     runTransaction,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
@@ -62,8 +61,40 @@ function displayCheckout() {
     checkoutTotal.textContent = "Total: ₹" + total.toFixed(2);
 }
 
+// Combine duplicate product IDs in the cart
+function normalizeCart() {
+    const products = new Map();
+
+    for (const item of cart) {
+        if (!item.id) {
+            throw new Error("Invalid product in cart.");
+        }
+
+        const quantity = Number(item.quantity);
+
+        if (!Number.isInteger(quantity) || quantity <= 0) {
+            throw new Error("Invalid product quantity.");
+        }
+
+        const existing = products.get(item.id);
+
+        if (existing) {
+            existing.quantity += quantity;
+        } else {
+            products.set(item.id, {
+                id: item.id,
+                quantity: quantity,
+                title: item.title || "Product"
+            });
+        }
+    }
+
+    return Array.from(products.values());
+}
+
 // Place order
 async function placeOrder() {
+
     if (!currentUser) {
         alert("Please login before placing an order.");
         window.location.href = "login.html";
@@ -77,10 +108,18 @@ async function placeOrder() {
 
     const selectedPayment = paymentMethod.value;
 
+    if (!["cash", "credit"].includes(selectedPayment)) {
+        checkoutMessage.textContent = "Please select a valid payment method.";
+        return;
+    }
+
     placeOrderBtn.disabled = true;
     checkoutMessage.textContent = "Processing your order...";
 
     try {
+
+        const normalizedCart = normalizeCart();
+
         const customerRef = doc(
             db,
             "customers",
@@ -101,11 +140,12 @@ async function placeOrder() {
             const customer = customerSnapshot.data();
 
             let total = 0;
+
             const orderItems = [];
             const productUpdates = [];
 
-            // Read current product information from Firestore
-            for (const item of cart) {
+            // Read and validate every product
+            for (const item of normalizedCart) {
 
                 const productRef = doc(
                     db,
@@ -116,25 +156,23 @@ async function placeOrder() {
                 const productSnapshot = await transaction.get(productRef);
 
                 if (!productSnapshot.exists()) {
-                    throw new Error(
-                        "Product not found: " + item.title
-                    );
+                    throw new Error("Product not found: " + item.title);
                 }
 
                 const product = productSnapshot.data();
 
-                const quantity = Number(item.quantity);
+                const quantity = item.quantity;
                 const stock = Number(product.qty);
                 const price = Number(product.price);
 
-                if (product.active === false) {
+                if (product.active !== true) {
                     throw new Error(
                         item.title + " is no longer available."
                     );
                 }
 
-                if (!Number.isInteger(quantity) || quantity <= 0) {
-                    throw new Error("Invalid quantity for " + item.title);
+                if (!Number.isInteger(stock) || stock < 0) {
+                    throw new Error("Invalid stock for " + item.title);
                 }
 
                 if (stock < quantity) {
@@ -143,20 +181,25 @@ async function placeOrder() {
                     );
                 }
 
-                if (!Number.isFinite(price) || price < 0) {
+                if (!Number.isFinite(price) || price <= 0) {
                     throw new Error("Invalid price for " + item.title);
                 }
 
                 const subtotal = price * quantity;
+
+                if (!Number.isFinite(subtotal)) {
+                    throw new Error("Invalid order amount.");
+                }
+
                 total += subtotal;
 
                 orderItems.push({
-                   productId: item.id,
-                   title: product.title,
-                   catId: product.catId,
-                   price: price,
-                   quantity: quantity,
-                   subtotal: subtotal
+                    productId: item.id,
+                    title: product.title,
+                    catId: product.catId,
+                    price: price,
+                    quantity: quantity,
+                    subtotal: subtotal
                 });
 
                 productUpdates.push({
@@ -165,9 +208,23 @@ async function placeOrder() {
                 });
             }
 
-            // Validate customer's available credit
-            const creditLimit = Number(customer.creditLimit || 0);
-            const creditUsed = Number(customer.creditUsed || 0);
+            if (!Number.isFinite(total) || total <= 0) {
+                throw new Error("Invalid order total.");
+            }
+
+            // Validate customer credit
+            const creditLimit = Number(customer.creditLimit ?? 0);
+            const creditUsed = Number(customer.creditUsed ?? 0);
+
+            if (
+                !Number.isFinite(creditLimit) ||
+                !Number.isFinite(creditUsed) ||
+                creditLimit < 0 ||
+                creditUsed < 0 ||
+                creditUsed > creditLimit
+            ) {
+                throw new Error("Invalid customer credit information.");
+            }
 
             if (selectedPayment === "credit") {
 
@@ -176,10 +233,12 @@ async function placeOrder() {
                 if (total > availableCredit) {
                     throw new Error(
                         "Insufficient credit limit. Available credit: ₹" +
-                        Math.max(0, availableCredit).toFixed(2)
+                        availableCredit.toFixed(2)
                     );
                 }
             }
+
+            // All reads are completed. Perform writes now.
 
             // Update product stock
             productUpdates.forEach((update) => {
@@ -195,7 +254,7 @@ async function placeOrder() {
                 });
             }
 
-            // Create order record
+            // Create order
             transaction.set(orderRef, {
                 orderId: orderRef.id,
                 customerId: currentUser.uid,
@@ -211,7 +270,7 @@ async function placeOrder() {
             });
         });
 
-        // Clear cart after successful order
+        // Clear cart after successful transaction
         localStorage.removeItem("cart");
 
         alert("Order placed successfully!");
@@ -219,6 +278,9 @@ async function placeOrder() {
         window.location.href = "orders.html";
 
     } catch (error) {
+
+        console.error("Checkout error:", error);
+
         checkoutMessage.textContent = error.message;
         placeOrderBtn.disabled = false;
     }

@@ -126,7 +126,41 @@ async function loadProductCategories() {
         categoryFilter.appendChild(filterOption);
     });
 }
+function validateProduct(title, description, catId, qtyValue, priceValue) {
+    if (title.length < 2) {
+        return "Product title must contain at least 2 characters.";
+    }
 
+    if (!description) {
+        return "Product description is required.";
+    }
+
+    if (!catId) {
+        return "Please select a category.";
+    }
+
+    const qty = Number(qtyValue);
+
+    if (
+        qtyValue === "" ||
+        !Number.isInteger(qty) ||
+        qty < 0
+    ) {
+        return "Quantity must be a non-negative whole number.";
+    }
+
+    const price = Number(priceValue);
+
+    if (
+        priceValue === "" ||
+        !Number.isFinite(price) ||
+        price <= 0
+    ) {
+        return "Price must be greater than zero.";
+    }
+
+    return null;
+}
 // ADD / UPDATE PRODUCT
 
 addProductBtn.addEventListener("click", async () => {
@@ -137,14 +171,18 @@ addProductBtn.addEventListener("click", async () => {
     const qty = Number(productQty.value);
     const price = Number(productPrice.value);
 
-    if (!title || !description || !catId ||
-        productQty.value === "" || productPrice.value === "" ||
-        !Number.isInteger(qty) || qty < 0 ||
-        !Number.isFinite(price) || price < 0) {
+    const validationError = validateProduct(
+    title,
+    description,
+    catId,
+    productQty.value,
+    productPrice.value
+);
 
-        alert("Please enter valid product details.");
-        return;
-    }
+if (validationError) {
+    alert(validationError);
+    return;
+}
 
     const productData = {
         title: title,
@@ -517,3 +555,4 @@ async function loadCustomers() {
 
 loadProductCategories();
 loadInventory();
+loadCustomers();
