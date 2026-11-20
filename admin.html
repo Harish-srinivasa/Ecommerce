@@ -100,6 +100,75 @@
     <tbody id="customerList"></tbody>
 </table>
 
+<hr>
+
+<section>
+    <h2>Sales Reports</h2>
+
+    <label for="reportStartDate">From:</label>
+    <input type="date" id="reportStartDate">
+
+    <label for="reportEndDate">To:</label>
+    <input type="date" id="reportEndDate">
+
+    <label for="reportType">Report Type:</label>
+    <select id="reportType">
+        <option value="all">All Sales</option>
+        <option value="category">Category-wise Sales</option>
+        <option value="cash">Cash Sales</option>
+        <option value="credit">Credit Sales</option>
+    </select>
+
+    <label for="reportCategory">Category:</label>
+    <select id="reportCategory">
+        <option value="all">All Categories</option>
+    </select>
+
+    <button id="generateReportBtn">Generate Report</button>
+
+    <h3 id="reportSummary">Sales Summary</h3>
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Customer Email</th>
+                <th>Payment Method</th>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody id="salesReportList"></tbody>
+    </table>
+
+    <h3>Top 10 Best-Selling Products</h3>
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Units Sold</th>
+            </tr>
+        </thead>
+        <tbody id="topProductsList"></tbody>
+    </table>
+
+    <h3>Bottom 10 Least-Selling Products</h3>
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Units Sold</th>
+            </tr>
+        </thead>
+        <tbody id="bottomProductsList"></tbody>
+    </table>
+</section>
+
+<script type="module" src="js/admin-reports.js"></script>
+
 
 </body>
 </html>

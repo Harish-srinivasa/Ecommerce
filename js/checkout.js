@@ -151,11 +151,12 @@ async function placeOrder() {
                 total += subtotal;
 
                 orderItems.push({
-                    productId: item.id,
-                    title: product.title,
-                    price: price,
-                    quantity: quantity,
-                    subtotal: subtotal
+                   productId: item.id,
+                   title: product.title,
+                   catId: product.catId,
+                   price: price,
+                   quantity: quantity,
+                   subtotal: subtotal
                 });
 
                 productUpdates.push({
