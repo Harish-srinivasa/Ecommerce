@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Ecommerce</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Checkout</h1>
+        <nav>
+            <a href="products.html">Continue Shopping</a>
+            <a href="cart.html">Cart</a>
+            <a href="orders.html">My Orders</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Order Summary</h2>
+
+        <table border="1" cellpadding="10">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+
+            <tbody id="checkoutList"></tbody>
+        </table>
+
+        <h3 id="checkoutTotal">Total: ₹0</h3>
+
+        <hr>
+
+        <h2>Payment Method</h2>
+
+        <select id="paymentMethod">
+            <option value="cash">Cash on Delivery</option>
+            <option value="credit">Credit Payment</option>
+        </select>
+
+        <p id="checkoutMessage"></p>
+
+        <button id="placeOrderBtn">Place Order</button>
+    </main>
+
+    <script type="module" src="js/checkout.js"></script>
+
+</body>
+</html>
