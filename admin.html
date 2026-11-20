@@ -206,6 +206,80 @@
 </section>
 
 <script type="module" src="js/inventory-reports.js"></script>
+<hr>
+
+<section>
+    <h2>Customer Reports</h2>
+
+    <h3>All Customers</h3>
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Customer ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>Credit Limit</th>
+                <th>Credit Used</th>
+                <th>Registered Date</th>
+            </tr>
+        </thead>
+        <tbody id="customerReportList"></tbody>
+    </table>
+
+    <hr>
+
+    <h3>Purchase Reports</h3>
+
+    <label for="customerReportStart">From:</label>
+    <input type="date" id="customerReportStart">
+
+    <label for="customerReportEnd">To:</label>
+    <input type="date" id="customerReportEnd">
+
+    <label for="customerPurchaseType">Purchase Type:</label>
+    <select id="customerPurchaseType">
+        <option value="all">All Purchases</option>
+        <option value="cash">Cash Purchases</option>
+        <option value="credit">Credit Purchases</option>
+    </select>
+
+    <button id="generateCustomerReportBtn">Generate Report</button>
+
+    <h3 id="customerReportSummary">Purchase Summary</h3>
+
+    <h3>Top 10 Customers</h3>
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Customer Name</th>
+                <th>Email</th>
+                <th>Total Purchases</th>
+            </tr>
+        </thead>
+        <tbody id="topCustomersList"></tbody>
+    </table>
+
+    <h3>Purchase Details</h3>
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer Email</th>
+                <th>Date</th>
+                <th>Payment Method</th>
+                <th>Total Amount</th>
+            </tr>
+        </thead>
+        <tbody id="customerPurchaseList"></tbody>
+    </table>
+</section>
+
+<script type="module" src="js/customer-reports.js"></script>
 
 
 </body>
