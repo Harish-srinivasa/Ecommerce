@@ -23,7 +23,7 @@ async function loadStockData() {
 
     allInventory = [];
     categoryNames = {};
-
+    stockReportCategory.innerHTML = '<option value="all">All Categories</option>';
     categoriesSnapshot.forEach((docSnap) => {
         categoryNames[docSnap.id] = docSnap.data().name;
     });

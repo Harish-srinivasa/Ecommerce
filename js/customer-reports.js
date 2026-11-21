@@ -107,21 +107,25 @@ function generateCustomerReport() {
     });
 
     const filteredOrders = allOrders.filter((order) => {
-        if (!order.createdAt) {
-            return false;
-        }
+    if (!order.createdAt) {
+        return false;
+    }
 
-        const orderDate = order.createdAt.toDate();
+    const orderDate = order.createdAt.toDate();
 
-        const matchesDate =
-            orderDate >= startDate && orderDate <= endDate;
+    const matchesDate =
+        orderDate >= startDate && orderDate <= endDate;
 
-        const matchesPayment =
-            selectedType === "all" ||
-            order.paymentMethod === selectedType;
+    const matchesPayment =
+        selectedType === "all" ||
+        order.paymentMethod === selectedType;
 
-        return matchesDate && matchesPayment;
-    });
+    const isCompletedPurchase =
+        order.paymentMethod === "credit" ||
+        order.paymentStatus !== "Pending";
+
+    return matchesDate && matchesPayment && isCompletedPurchase;
+});
 
     const customerPurchases = {};
 

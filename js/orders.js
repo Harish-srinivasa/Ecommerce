@@ -190,3 +190,6 @@ onAuthStateChanged(auth, (user) => {
 
     loadOrders(user);
 });
+printBillBtn.addEventListener("click", () => {
+    window.print();
+});
