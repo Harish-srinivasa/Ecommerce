@@ -126,7 +126,41 @@ async function loadProductCategories() {
         categoryFilter.appendChild(filterOption);
     });
 }
+function validateProduct(title, description, catId, qtyValue, priceValue) {
+    if (title.length < 2) {
+        return "Product title must contain at least 2 characters.";
+    }
 
+    if (!description) {
+        return "Product description is required.";
+    }
+
+    if (!catId) {
+        return "Please select a category.";
+    }
+
+    const qty = Number(qtyValue);
+
+    if (
+        qtyValue === "" ||
+        !Number.isInteger(qty) ||
+        qty < 0
+    ) {
+        return "Quantity must be a non-negative whole number.";
+    }
+
+    const price = Number(priceValue);
+
+    if (
+        priceValue === "" ||
+        !Number.isFinite(price) ||
+        price <= 0
+    ) {
+        return "Price must be greater than zero.";
+    }
+
+    return null;
+}
 // ADD / UPDATE PRODUCT
 
 addProductBtn.addEventListener("click", async () => {
@@ -137,14 +171,18 @@ addProductBtn.addEventListener("click", async () => {
     const qty = Number(productQty.value);
     const price = Number(productPrice.value);
 
-    if (!title || !description || !catId ||
-        productQty.value === "" || productPrice.value === "" ||
-        !Number.isInteger(qty) || qty < 0 ||
-        !Number.isFinite(price) || price < 0) {
+    const validationError = validateProduct(
+    title,
+    description,
+    catId,
+    productQty.value,
+    productPrice.value
+);
 
-        alert("Please enter valid product details.");
-        return;
-    }
+if (validationError) {
+    alert(validationError);
+    return;
+}
 
     const productData = {
         title: title,
@@ -435,9 +473,86 @@ function getFilteredProducts() {
         : allProducts;
 }
 
+// CUSTOMER MANAGEMENT
+
+const {
+    collection: custCollection,
+    getDocs: custGetDocs,
+    doc: custDoc,
+    updateDoc: custUpdateDoc
+} = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
+
+async function loadCustomers() {
+    const customerList = document.getElementById("customerList");
+
+    const snapshot = await custGetDocs(
+        custCollection(db, "customers")
+    );
+
+    customerList.innerHTML = "";
+
+    snapshot.forEach((docSnap) => {
+        const customer = docSnap.data();
+
+        const row = document.createElement("tr");
+
+        const values = [
+            docSnap.id,
+            customer.name || "",
+            customer.email || "",
+            customer.mobile || "",
+            customer.creditLimit ?? 0
+        ];
+
+        values.forEach((value) => {
+            const cell = document.createElement("td");
+            cell.textContent = value;
+            row.appendChild(cell);
+        });
+
+        const actionCell = document.createElement("td");
+
+        const creditInput = document.createElement("input");
+        creditInput.type = "number";
+        creditInput.min = "0";
+        creditInput.value = customer.creditLimit ?? 0;
+
+        const updateButton = document.createElement("button");
+        updateButton.textContent = "Update";
+
+        updateButton.addEventListener("click", async () => {
+            const newLimit = Number(creditInput.value);
+
+            if (!Number.isFinite(newLimit) || newLimit < 0) {
+                alert("Enter a valid credit limit.");
+                return;
+            }
+
+            try {
+                await custUpdateDoc(
+                    custDoc(db, "customers", docSnap.id),
+                    { creditLimit: newLimit }
+                );
+
+                alert("Credit limit updated successfully!");
+
+                loadCustomers();
+            } catch (error) {
+                alert("Error updating credit limit: " + error.message);
+            }
+        });
+
+        actionCell.append(creditInput, updateButton);
+        row.appendChild(actionCell);
+
+        customerList.appendChild(row);
+    });
+}
+
 
 
 // INITIAL LOAD
 
 loadProductCategories();
 loadInventory();
+loadCustomers();

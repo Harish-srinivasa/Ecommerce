@@ -81,6 +81,206 @@
     <button id="nextPageBtn">Next</button>
 </div>
 
+<hr>
+
+<h2>Customer Management</h2>
+
+<table border="1" cellpadding="10">
+    <thead>
+        <tr>
+            <th>Customer ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Mobile</th>
+            <th>Credit Limit (₹)</th>
+            <th>Update Credit Limit</th>
+        </tr>
+    </thead>
+
+    <tbody id="customerList"></tbody>
+</table>
+
+<hr>
+
+<section>
+    <h2>Sales Reports</h2>
+
+    <label for="reportStartDate">From:</label>
+    <input type="date" id="reportStartDate">
+
+    <label for="reportEndDate">To:</label>
+    <input type="date" id="reportEndDate">
+
+    <label for="reportType">Report Type:</label>
+    <select id="reportType">
+        <option value="all">All Sales</option>
+        <option value="category">Category-wise Sales</option>
+        <option value="cash">Cash Sales</option>
+        <option value="credit">Credit Sales</option>
+    </select>
+
+    <label for="reportCategory">Category:</label>
+    <select id="reportCategory">
+        <option value="all">All Categories</option>
+    </select>
+
+    <button id="generateReportBtn">Generate Report</button>
+
+    <h3 id="reportSummary">Sales Summary</h3>
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Customer Email</th>
+                <th>Payment Method</th>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody id="salesReportList"></tbody>
+    </table>
+
+    <h3>Top 10 Best-Selling Products</h3>
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Units Sold</th>
+            </tr>
+        </thead>
+        <tbody id="topProductsList"></tbody>
+    </table>
+
+    <h3>Bottom 10 Least-Selling Products</h3>
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Units Sold</th>
+            </tr>
+        </thead>
+        <tbody id="bottomProductsList"></tbody>
+    </table>
+</section>
+
+<script type="module" src="js/admin-reports.js"></script>
+<hr>
+
+<section>
+    <h2>Inventory Reports</h2>
+
+    <label for="stockReportType">Report Type:</label>
+    <select id="stockReportType">
+        <option value="all">All Stock</option>
+        <option value="category">Category-wise Stock</option>
+        <option value="high">High Stock (&gt; 100)</option>
+        <option value="low">Low Stock (&lt; 15)</option>
+    </select>
+
+    <label for="stockReportCategory">Category:</label>
+    <select id="stockReportCategory">
+        <option value="all">All Categories</option>
+    </select>
+
+    <button id="generateStockReportBtn">Generate Report</button>
+
+    <h3 id="stockReportSummary">Inventory Summary</h3>
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="stockReportList"></tbody>
+    </table>
+</section>
+
+<script type="module" src="js/inventory-reports.js"></script>
+<hr>
+
+<section>
+    <h2>Customer Reports</h2>
+
+    <h3>All Customers</h3>
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Customer ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>Credit Limit</th>
+                <th>Credit Used</th>
+                <th>Registered Date</th>
+            </tr>
+        </thead>
+        <tbody id="customerReportList"></tbody>
+    </table>
+
+    <hr>
+
+    <h3>Purchase Reports</h3>
+
+    <label for="customerReportStart">From:</label>
+    <input type="date" id="customerReportStart">
+
+    <label for="customerReportEnd">To:</label>
+    <input type="date" id="customerReportEnd">
+
+    <label for="customerPurchaseType">Purchase Type:</label>
+    <select id="customerPurchaseType">
+        <option value="all">All Purchases</option>
+        <option value="cash">Cash Purchases</option>
+        <option value="credit">Credit Purchases</option>
+    </select>
+
+    <button id="generateCustomerReportBtn">Generate Report</button>
+
+    <h3 id="customerReportSummary">Purchase Summary</h3>
+
+    <h3>Top 10 Customers</h3>
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Customer Name</th>
+                <th>Email</th>
+                <th>Total Purchases</th>
+            </tr>
+        </thead>
+        <tbody id="topCustomersList"></tbody>
+    </table>
+
+    <h3>Purchase Details</h3>
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer Email</th>
+                <th>Date</th>
+                <th>Payment Method</th>
+                <th>Total Amount</th>
+            </tr>
+        </thead>
+        <tbody id="customerPurchaseList"></tbody>
+    </table>
+</section>
+
+<script type="module" src="js/customer-reports.js"></script>
+
 
 </body>
 </html>

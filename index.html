@@ -1,25 +1,71 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecommerce</title>
+    <title>Online Shopping | Home</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <header>
-        <h1>Online Shopping</h1>
+    <header class="hero-header">
+        <nav class="navbar">
+            <h2 class="brand">ShopEase</h2>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="products.html">Products</a>
+                <a href="login.html">Login</a>
+                <a href="signup.html">Sign Up</a>
+            </div>
+        </nav>
+
+        <div class="hero-content">
+            <p class="hero-tagline">YOUR ONE-STOP SHOPPING DESTINATION</p>
+            <h1>Shopping Made <span>Simple & Fun!</span></h1>
+            <p>Discover amazing products, explore great choices and enjoy a seamless shopping experience.</p>
+
+            <div class="hero-buttons">
+                <a href="products.html" class="primary-btn">Explore Products →</a>
+                <a href="signup.html" class="secondary-btn">Join Us</a>
+            </div>
+        </div>
     </header>
 
     <main>
-        <h2>Welcome to Online Shopping</h2>
-        <p>Browse products and shop online.</p>
+        <section class="features-section">
+            <h2>Why Shop With Us?</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🛍️</div>
+                    <h3>Wide Selection</h3>
+                    <p>Explore a variety of products across different categories.</p>
+                </div>
 
-        <a href="login.html">Login</a>
-        <a href="signup.html">Sign Up</a>
-        <a href="products.html">Products</a>
+                <div class="feature-card">
+                    <div class="feature-icon">💳</div>
+                    <h3>Flexible Payments</h3>
+                    <p>Choose cash or credit payment at checkout.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <h3>Easy Ordering</h3>
+                    <p>Add products to your cart and place orders with ease.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="home-cta">
+            <h2>Ready to Start Shopping?</h2>
+            <p>Your next favourite product might be just a click away.</p>
+            <a href="products.html" class="primary-btn">Shop Now →</a>
+        </section>
     </main>
+
+    <footer class="site-footer">
+        <p>© 2026 ShopEase. All Rights Reserved.</p>
+    </footer>
 
 </body>
 </html>

@@ -1,68 +1,66 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products - Ecommerce</title>
+    <title>Products | ShopEase</title>
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
 
-    <header>
-        <h1>Online Shopping</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="cart.html">Cart</a>
-            <a href="login.html">Login</a>
-            <a href="orders.html">My Orders</a>
+    <header class="page-header">
+        <nav class="navbar">
+            <h2 class="brand">ShopEase</h2>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="products.html">Products</a>
+                <a href="cart.html">Cart</a>
+                <a href="login.html">Login</a>
+                <a href="orders.html">My Orders</a>
+            </div>
         </nav>
     </header>
 
-    <main>
-        <h2>Products</h2>
+    <main class="products-page">
+
+        <section class="products-heading">
+            <p class="hero-tagline">FIND WHAT YOU LOVE</p>
+            <h1>Explore Our Products</h1>
+            <p>Discover products that make your everyday life better.</p>
+        </section>
 
         <section class="product-controls">
-            <input type="text" id="searchInput" placeholder="Search products">
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search by product name or ID"
+            >
 
             <select id="categoryFilter">
                 <option value="all">All Categories</option>
-                <option value="electronics">Electronics</option>
-                <option value="clothing">Clothing</option>
-                <option value="books">Books</option>
             </select>
         </section>
 
+        <p id="productMessage"></p>
+
         <section id="productList" class="product-container">
-
-            <div class="product-card">
-                <h3>Headphones</h3>
-                <p>Category: Electronics</p>
-                <p>Price: ₹1500</p>
-                <button>Add to Cart</button>
-            </div>
-
-            <div class="product-card">
-                <h3>T-Shirt</h3>
-                <p>Category: Clothing</p>
-                <p>Price: ₹500</p>
-                <button>Add to Cart</button>
-            </div>
-
-            <div class="product-card">
-                <h3>Programming Book</h3>
-                <p>Category: Books</p>
-                <p>Price: ₹800</p>
-                <button>Add to Cart</button>
-            </div>
-
         </section>
 
         <section class="pagination">
-            <button id="previousPage">Previous</button>
+            <button id="previousPage">← Previous</button>
             <span id="pageNumber">1</span>
-            <button id="nextPage">Next</button>
+            <button id="nextPage">Next →</button>
         </section>
+
     </main>
-<script src="js/products.js"></script>
+
+    <footer class="site-footer">
+        <p>© 2026 ShopEase. All Rights Reserved.</p>
+    </footer>
+
+    <script type="module" src="js/products.js"></script>
+
 </body>
 </html>

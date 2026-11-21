@@ -13,9 +13,33 @@ import {
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-
-// CHANGE THIS TO YOUR ADMIN EMAIL
+// ADMIN EMAIL
 const ADMIN_EMAIL = "srinivasanharish55@gmail.com";
+
+
+// SIGNUP VALIDATION
+function validateSignup(name, email, mobile, password) {
+
+    if (name.trim().length < 2) {
+        return "Name must contain at least 2 characters.";
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(email)) {
+        return "Enter a valid email address.";
+    }
+
+    if (!/^[0-9]{10}$/.test(mobile)) {
+        return "Mobile number must contain exactly 10 digits.";
+    }
+
+    if (password.length < 8) {
+        return "Password must contain at least 8 characters.";
+    }
+
+    return null;
+}
 
 
 // CUSTOMER SIGN UP
@@ -33,18 +57,16 @@ if (signupForm) {
         const mobile = document.getElementById("signupMobile").value.trim();
         const password = document.getElementById("signupPassword").value;
 
-        if (!name || !email || !mobile || !password) {
-            alert("All fields are required.");
-            return;
-        }
+        // VALIDATE INPUTS
+        const validationError = validateSignup(
+            name,
+            email,
+            mobile,
+            password
+        );
 
-        if (!/^[0-9]{10}$/.test(mobile)) {
-            alert("Enter a valid 10-digit mobile number.");
-            return;
-        }
-
-        if (password.length < 6) {
-            alert("Password must contain at least 6 characters.");
+        if (validationError) {
+            alert(validationError);
             return;
         }
 
@@ -70,6 +92,7 @@ if (signupForm) {
                     email: email,
                     mobile: mobile,
                     creditLimit: 0,
+                    creditUsed: 0,
                     createdAt: serverTimestamp()
                 });
 
@@ -80,7 +103,7 @@ if (signupForm) {
 
         } catch (error) {
 
-            alert(error.message);
+            alert("Signup failed: " + error.message);
 
         }
 
@@ -101,6 +124,11 @@ if (loginForm) {
 
         const email = document.getElementById("loginEmail").value.trim().toLowerCase();
         const password = document.getElementById("loginPassword").value;
+
+        if (!email || !password) {
+            alert("Email and password are required.");
+            return;
+        }
 
         try {
 
@@ -141,7 +169,7 @@ if (resetPasswordBtn) {
     resetPasswordBtn.addEventListener("click", async () => {
 
         const email =
-            document.getElementById("loginEmail").value.trim();
+            document.getElementById("loginEmail").value.trim().toLowerCase();
 
         if (!email) {
             alert("Enter your email address first.");
@@ -156,7 +184,7 @@ if (resetPasswordBtn) {
 
         } catch (error) {
 
-            alert(error.message);
+            alert("Password reset failed: " + error.message);
 
         }
 
